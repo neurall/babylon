@@ -29,8 +29,10 @@ import { types as tt } from "../../tokenizer/types";
 
 export default function(instance) {
 
-  // we need to enable this we we can decide indentation later.
+  // we need to enable locations so we can decide indentation in jsxParseIndentedElementAt.
 
+  instance.options.locations = true;
+  
   // change no 1: on <tag start call our jsxParseIndentedElementAt instead of jsxParseElementAt
 
   instance.extend("parseExprAtom", function(inner) {
