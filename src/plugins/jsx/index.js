@@ -44,6 +44,12 @@ pp.jsxReadToken = function() {
   let chunkStart = this.state.pos;
   for (;;) {
     if (this.state.pos >= this.input.length) {
+
+      // In Indented mode end tags are gone.
+
+      if (this.options.indented && this.state.startLoc) {
+         return this.finishToken(tt.jsxText,"");
+      }
       this.raise(this.state.start, "Unterminated JSX contents");
     }
 
@@ -327,10 +333,25 @@ pp.jsxParseElementAt = function(startPos, startLoc) {
   let openingElement = this.jsxParseOpeningElementAt(startPos, startLoc);
   let closingElement = null;
 
-  if (!openingElement.selfClosing) {
+  // In Indented mode. there are no selfclosing or end tags so all tags can have childs
+
+  if (!openingElement.selfClosing
+  || (this.options.indented && this.startLoc)) {
+
     contents: for (;;) {
       switch (this.state.type) {
         case tt.jsxTagStart:
+
+          // In Indented mode. if we are not indented under last node. 
+
+          if (this.options.indented && this.state.startLoc
+          &&((this.state.startLoc.line   == openingElement.loc.start.line && !openingElement.selfClosing)||
+              this.state.startLoc.column <= openingElement.loc.start.column)) {  
+              
+              // Then leave/backtrace until we find real parent to continue creating childs under
+
+              break contents;
+          }       
           startPos = this.state.start; startLoc = this.state.startLoc;
           this.next();
           if (this.eat(tt.slash)) {
@@ -349,10 +370,24 @@ pp.jsxParseElementAt = function(startPos, startLoc) {
           break;
 
         default:
+
+          // In Indented mode missing ending tags are not unexpected so continue.
+
+          if (this.options.indented && this.state.startLoc) {  
+            break contents;    
+          }
           this.unexpected();
       }
     }
 
+    // In Indented mode generate missing closingElements for AST backcompatibility
+
+    if (this.options.indented && this.state.startLoc && !closingElement) {
+      let dummy = this.startNodeAt(startPos, startLoc);
+      dummy.name = openingElement.name;
+      closingElement = this.finishNode(dummy, "JSXClosingElement");
+    }    
+                  
     if (getQualifiedJSXName(closingElement.name) !== getQualifiedJSXName(openingElement.name)) {
       this.raise(
         closingElement.start,

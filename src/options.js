@@ -8,7 +8,8 @@ export const defaultOptions: {
   allowImportExportEverywhere: boolean,
   allowSuperOutsideMethod: boolean,
   plugins: Array<string>,
-  strictMode: any
+  strictMode: any,
+  indented: boolean
 } = {
   // Source type ("script" or "module") for different semantics
   sourceType: "script",
@@ -26,6 +27,8 @@ export const defaultOptions: {
   plugins: [],
   // TODO
   strictMode: null,
+  // When enabled, in Jsx indentation now replaces the end tags. 
+  indented: false
 };
 
 // Interpret and default an options object
