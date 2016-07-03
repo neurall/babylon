@@ -39,12 +39,12 @@ export default class Parser extends Tokenizer {
       plugins.push("flow");
     }
 
-    if (plugins.indexOf("jadey") >= 0) {
+    if (plugins.indexOf("jadex") >= 0) {
       // ensure jadex plugin loads jsx and jadex loads after jsx
       plugins = plugins.filter((plugin) => plugin !== "jsx");
-      plugins = plugins.filter((plugin) => plugin !== "jadey");
+      plugins = plugins.filter((plugin) => plugin !== "jadex");
       plugins.push("jsx");
-      plugins.push("jadey");
+      plugins.push("jadex");
     }
 
     for (let name of plugins) {
