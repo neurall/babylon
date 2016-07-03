@@ -13,11 +13,11 @@ import "./tokenizer/context";
 
 import flowPlugin from "./plugins/flow";
 import jsxPlugin from "./plugins/jsx";
-import jadexPlugin from "./plugins/jadex";
+import jadeyPlugin from "./plugins/jadey";
 
 plugins.flow = flowPlugin;
 plugins.jsx = jsxPlugin;
-plugins.jadex = jadexPlugin;
+plugins.jadey = jadeyPlugin;
 
 export function parse(input, options) {
   return new Parser(options, input).parse();
